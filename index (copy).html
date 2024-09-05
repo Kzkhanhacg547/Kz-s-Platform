@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kz Khánhh's Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode {
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+
+        .hexagon {
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hexagon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(110, 72, 170, 0.5);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+            background-size: 200% 200%;
+            animation: gradientAnimation 5s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-list {
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #6e48aa #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .file-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .file-list::-webkit-scrollbar-track {
+            background: #E5E7EB;
+        }
+
+        .file-list::-webkit-scrollbar-thumb {
+            background-color: #6e48aa;
+            border-radius: 20px;
+        }
+
+        .media-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .media-container:hover {
+            transform: scale(1.02);
+        }
+
+        .media-container iframe,
+        .media-container video,
+        .media-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-container {
+            width: 100%;
+            background-color: #f3f4f6;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-mode .audio-container {
+            background-color: #2d3748;
+        }
+
+        .pdf-container {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .pdf-container:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        #darkModeToggle {
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        /* Fade-in animation for posts */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Pulse animation for notifications */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Shake animation for errors */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Styles for loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen transition-colors duration-300">
+    <header class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="hexagon bg-white w-12 h-12 flex items-center justify-center">
+                    <span class="text-purple-600 font-bold text-xl">Kz</span>
+                </div>
+                <h1 class="text-2xl font-bold">Khánhh's Platform</h1>
+            </div>
+            <nav class="space-x-4 flex items-center">
+                <button id="loginButton" class="btn bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded">Login</button>
+                <button id="registerButton" class="btn bg-green-500 hover:bg-green-600 px-4 py-2 rounded">Register</button>
+                <button id="logoutButton" class="btn bg-red-500 hover:bg-red-600 px-4 py-2 rounded hidden">Logout</button>
+                <i id="darkModeToggle" class="fas fa-moon text-2xl ml-4"></i>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4">
+        <form id="uploadForm" class="mb-6 hidden">
+            <div class="bg-white dark:bg-gray-800 shadow-md rounded px-8 pt-6 pb-8 mb-4 transition-all duration-300">
+                <h2 class="text-2xl font-semibold mb-4 dark:text-white">Upload New Post</h2>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="title">
+                        Title
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-colors duration-300" id="title" type="text" placeholder="Post title" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="content">
+                        Content
+                    </label>
+                    <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-colors duration-300" id="content" placeholder="Post content" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2" for="files">
+                        Upload Files
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:text-gray-300 dark:bg-gray-700 leading-tight focus:outline-none focus:shadow-outline transition-colors duration-300" id="files" type="file" name="files" multiple>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-all duration-300" type="submit">
+                        Upload Post
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <section id="posts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 transition-colors duration-300">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Khánhh's Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadForm = document.getElementById('uploadForm');
+            const postsContainer = document.getElementById('posts');
+            const loginButton = document.getElementById('loginButton');
+            const registerButton = document.getElementById('registerButton');
+            const logoutButton = document.getElementById('logoutButton');
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+
+            let currentUser = null;
+
+            // Dark mode toggle
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                darkModeToggle.classList.toggle('fa-moon');
+                darkModeToggle.classList.toggle('fa-sun');
+            });
+
+            function renderMediaContent(file) {
+                const extension = file.split('.').pop().toLowerCase();
+                switch (extension) {
+                    case 'pdf':
+                        return `<div class="pdf-container" id="pdf-${file}"></div>
+                                <script>
+                                    pdfjsLib.getDocument('/files/${file}').promise.then(function(pdf) {
+                                        pdf.getPage(1).then(function(page) {
+                                            var scale = 1.5;
+                                            var viewport = page.getViewport({ scale: scale });
+                                            var canvas = document.createElement('canvas');
+                                            var context = canvas.getContext('2d');
+                                            canvas.height = viewport.height;
+                                            canvas.width = viewport.width;
+                                            var renderContext = {
+                                                canvasContext: context,
+                                                viewport: viewport
+                                            };
+                                            page.render(renderContext);
+                                            document.getElementById('pdf-${file}').appendChild(canvas);
+                                        });
+                                    });
+                                <\/script>`;
+                    case 'mp4':
+                    case 'webm':
+                    case 'ogg':
+                        return `<div class="media-container">
+                                    <video controls>
+                                        <source src="/files/${file}" type="video/${extension}">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>`;
+                    case 'mp3':
+                    case 'wav':
+                        return `<div class="audio-container">
+                                    <audio controls>
+                                        <source src="/files/${file}" type="audio/${extension}">
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                </div>`;
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'png':
+                    case 'gif':
+                        return `<div class="media-container">
+                                    <img src="/files/${file}" alt="Image">
+                                </div>`;
+                    default:
+                        return `<p>Unsupported file type: ${extension}</p>`;
+                }
+            }
+
+            function renderPosts(posts) {
+                            postsContainer.innerHTML = '';
+                            posts.forEach((post, index) => {
+                                const postCard = document.createElement('div');
+                                postCard.className = 'bg-white dark:bg-gray-800 shadow-md rounded p-4 card-hover mb-4 fade-in';
+                                postCard.style.animationDelay = `${index * 0.1}s`;
+                                postCard.innerHTML = `
+                                    <h3 class="text-gray-700 font-bold dark:text-gray-300">${post.title}</h3>
+                                    <p class="text-gray-700 dark:text-gray-300">${post.content}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Posted by ${post.author} on ${new Date(post.date).toLocaleDateString()}</p>
+                                    <div class="file-list mt-4">
+                                        ${post.files.map(file => `
+                                            <div class="mb-4">
+                                                ${renderMediaContent(file)}
+                                            </div>`).join('')}
+                                    </div>
+                                    <div class="flex space-x-2 mt-4 ${post.author !== currentUser ? 'hidden' : ''}">
+                                        <button class="edit-post btn bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2 rounded transition-all duration-300" data-index="${index}">Edit</button>
+                                        <button class="delete-post btn bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded transition-all duration-300" data-index="${index}">Delete</button>
+                                    </div>
+                                `;
+                                postsContainer.appendChild(postCard);
+                            });
+
+                            // Add event listeners for edit and delete buttons
+                            document.querySelectorAll('.delete-post').forEach(button => {
+                                button.addEventListener('click', deletePost);
+                            });
+
+                            document.querySelectorAll('.edit-post').forEach(button => {
+                                button.addEventListener('click', editPost);
+                            });
+
+                            // Apply fade-in effect
+                            gsap.from(".fade-in", {
+                                opacity: 0,
+                                y: 20,
+                                stagger: 0.1,
+                                duration: 0.5,
+                                ease: "power2.out"
+                            });
+                        }
+
+                        // Fetch posts from server
+                        async function fetchPosts() {
+                            try {
+                                const response = await fetch('/posts');
+                                const posts = await response.json();
+                                renderPosts(posts);
+                            } catch (error) {
+                                console.error('Error fetching posts:', error);
+                                showNotification('Error fetching posts. Please try again later.', 'error');
+                            }
+                        }
+
+                        // Toggle loading overlay
+                        function toggleLoading(show) {
+                            if (show) {
+                                loadingOverlay.classList.add('active');
+                            } else {
+                                loadingOverlay.classList.remove('active');
+                            }
+                        }
+
+                        // Upload form handling
+                        uploadForm.addEventListener('submit', async (event) => {
+                            event.preventDefault();
+                            const title = document.getElementById('title').value.trim();
+                            const content = document.getElementById('content').value.trim();
+                            const files = document.getElementById('files').files;
+
+                            if (!title || !content) {
+                                showNotification('Please enter both title and content.', 'error');
+                                return;
+                            }
+
+                            const formData = new FormData();
+                            formData.append('title', title);
+                            formData.append('content', content);
+
+                            Array.from(files).forEach(file => {
+                                formData.append('files', file);
+                            });
+
+                            toggleLoading(true); // Show loading overlay
+
+                            try {
+                                const response = await fetch('/upload', {
+                                    method: 'POST',
+                                    body: formData,
+                                });
+                                if (response.ok) {
+                                    showNotification('Post uploaded successfully', 'success');
+                                    fetchPosts();
+                                    uploadForm.reset();
+                                } else {
+                                    showNotification(await response.text(), 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error uploading post:', error);
+                                showNotification('Error uploading post. Please try again.', 'error');
+                            } finally {
+                                toggleLoading(false); // Hide loading overlay
+                            }
+                        });
+
+                        // Handle delete post
+                        async function deletePost(event) {
+                            const index = event.target.dataset.index;
+                            toggleLoading(true);
+                            try {
+                                const response = await fetch(`/posts/${index}`, {
+                                    method: 'DELETE',
+                                });
+                                if (response.ok) {
+                                    showNotification('Post deleted successfully', 'success');
+                                    fetchPosts();
+                                } else {
+                                    showNotification(await response.text(), 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error deleting post:', error);
+                                showNotification('Error deleting post. Please try again.', 'error');
+                            } finally {
+                                toggleLoading(false);
+                            }
+                        }
+
+                        // Handle edit post
+                        async function editPost(event) {
+                            const index = event.target.dataset.index;
+                            const title = prompt('Enter new title:');
+                            const content = prompt('Enter new content:');
+                            if (title && content) {
+                                toggleLoading(true);
+                                try {
+                                    const response = await fetch(`/posts/${index}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ title, content }),
+                                    });
+                                    if (response.ok) {
+                                        showNotification('Post updated successfully', 'success');
+                                        fetchPosts();
+                                    } else {
+                                        showNotification(await response.text(), 'error');
+                                    }
+                                } catch (error) {
+                                    console.error('Error updating post:', error);
+                                    showNotification('Error updating post. Please try again.', 'error');
+                                } finally {
+                                    toggleLoading(false);
+                                }
+                            }
+                        }
+
+                        // Handle login
+                        loginButton.addEventListener('click', async () => {
+                            const username = prompt('Enter username:');
+                            const password = prompt('Enter password:');
+                            if (username && password) {
+                                toggleLoading(true);
+                                try {
+                                    const response = await fetch('/login', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username, password }),
+                                        credentials: 'include'
+                                    });
+
+                                    if (response.ok) {
+                                        currentUser = username;
+                                        showNotification('Logged in successfully', 'success');
+                                        toggleAuthButtons(true);
+                                        fetchPosts();
+                                        uploadForm.classList.remove('hidden');
+                                    } else {
+                                        showNotification(await response.text(), 'error');
+                                    }
+                                } catch (error) {
+                                    console.error('Login error:', error);
+                                    showNotification('Login failed. Please try again.', 'error');
+                                } finally {
+                                    toggleLoading(false);
+                                }
+                            }
+                        });
+
+                        // Handle register
+                        registerButton.addEventListener('click', async () => {
+                            const username = prompt('Choose a username:');
+                            const password = prompt('Choose a password:');
+                            if (username && password) {
+                                toggleLoading(true);
+                                try {
+                                    const response = await fetch('/register', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ username, password }),
+                                    });
+                                    if (response.ok) {
+                                        showNotification('User registered successfully', 'success');
+                                    } else {
+                                        showNotification(await response.text(), 'error');
+                                    }
+                                } catch (error) {
+                                    console.error('Registration error:', error);
+                                    showNotification('Registration failed. Please try again.', 'error');
+                                } finally {
+                                    toggleLoading(false);
+                                }
+                            }
+                        });
+
+                        // Handle logout
+                        logoutButton.addEventListener('click', async () => {
+                            toggleLoading(true);
+                            try {
+                                const response = await fetch('/logout', {
+                                    method: 'POST',
+                                });
+                                if (response.ok) {
+                                    showNotification('Logged out successfully', 'success');
+                                    toggleAuthButtons(false);
+                                    fetchPosts();
+                                    uploadForm.classList.add('hidden');
+                                    currentUser = null;
+                                } else {
+                                    showNotification(await response.text(), 'error');
+                                }
+                            } catch (error) {
+                                console.error('Logout error:', error);
+                                showNotification('Logout failed. Please try again.', 'error');
+                            } finally {
+                                toggleLoading(false);
+                            }
+                        });
+
+                        // Toggle visibility of auth buttons
+                        function toggleAuthButtons(loggedIn) {
+                            loginButton.classList.toggle('hidden', loggedIn);
+                            registerButton.classList.toggle('hidden', loggedIn);
+                            logoutButton.classList.toggle('hidden', !loggedIn);
+                        }
+
+                        // Show notification
+                        function showNotification(message, type = 'info') {
+                            const notification = document.createElement('div');
+                            notification.className = `fixed bottom-4 right-4 p-4 rounded-lg text-white ${type === 'error' ? 'bg-red-500' : 'bg-green-500'} shadow-lg transition-opacity duration-300 opacity-0`;
+                            notification.textContent = message;
+                            document.body.appendChild(notification);
+
+                            gsap.to(notification, {
+                                opacity: 1,
+                                duration: 0.3,
+                                ease: "power2.out",
+                                onComplete: () => {
+                                    gsap.to(notification, {
+                                        opacity: 0,
+                                        delay: 3,
+                                        duration: 0.3,
+                                        ease: "power2.in",
+                                        onComplete: () => {
+                                            notification.remove();
+                                        }
+                                    });
+                                }
+                            });
+
+                            if (type === 'error') {
+                                gsap.to(notification, {
+                                    x: 5,
+                                    duration: 0.1,
+                                    repeat: 5,
+                                    yoyo: true,
+                                    ease: "power2.inOut"
+                                });
+                            } else {
+                                gsap.to(notification, {
+                                    scale: 1.05,
+                                    duration: 0.2,
+                                    repeat: 1,
+                                    yoyo: true,
+                                    ease: "power2.inOut"
+                                });
+                            }
+                        }
+
+                        // Initialize
+                        fetchPosts();
+                    });
+                </script>
+            </body>
+            </html>

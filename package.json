@@ -1,0 +1,16 @@
+{
+  "name": "kz-khanh-learning-platform",
+  "version": "1.0.0",
+  "description": "A platform for sharing learning materials",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-session": "^1.18.0",
+    "multer": "^1.4.2"
+  }
+}
